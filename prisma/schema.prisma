@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Pizza {
+  id         Int            @id @default(autoincrement())
+  name       String
+  imageUrl   String
+  categoryId Int
+  category   Category       @relation(fields: [categoryId], references: [id])
+  variants   PizzaVariant[]
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  pizzas Pizza[]
+}
+
+model PizzaVariant {
+  id        Int       @id @default(autoincrement())
+  pizzaId   Int
+  size      Int
+  doughType DoughType
+  price     Float
+
+  pizza      Pizza       @relation(fields: [pizzaId], references: [id])
+  orderItems OrderItem[]
+}
+
+enum DoughType {
+  THIN
+  TRADITIONAL
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  phone   String
+  address String
+  totalPrice Float
+  payment    Payment
+  createdAt  DateTime @default(now())
+
+  items OrderItem[]
+}
+
+enum Payment {
+  cash
+  card
+}
+
+model OrderItem {
+  id             Int @id @default(autoincrement())
+  orderId        Int
+  pizzaVariantId Int
+  quantity       Int @default(1)
+
+  order        Order        @relation(fields: [orderId], references: [id])
+  pizzaVariant PizzaVariant @relation(fields: [pizzaVariantId], references: [id])
+}
+
