@@ -69,4 +69,3 @@ model OrderItem {
   order        Order        @relation(fields: [orderId], references: [id])
   pizzaVariant PizzaVariant @relation(fields: [pizzaVariantId], references: [id])
 }
-
